@@ -9,6 +9,13 @@
   margin: 0;
 }
 
+.no-connection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .chat-container {
   display: flex;
   flex-direction: column;

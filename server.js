@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 var http = require("http").createServer(app);
-var io = require("socket.io")(http);
+var io = require("socket.io")(http, { cors: true, origins: ["*:*"] });
 
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
@@ -54,11 +54,22 @@ app.post("/username", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("a user connected");
+  console.log("socket: a user connected");
+
+  socket.on("join", (user_name) => {
+    console.log(`socket: ${user_name} ${socket.id} joined...`);
+    Manager.addNewUser(socket.id, user_name);
+  });
+
+  socket.on("disconnect", function () {
+    console.log(`socket: ${socket.id} disconnected... `);
+    Manager.removeUser(socket.id);
+    //Let other users know that someone disconnected
+  });
 });
 
 let port = process.env.PORT || 8888;
-app.listen(port, (err) => {
+http.listen(port, (err) => {
   if (err) throw err;
   console.log(`Listening on port ${port}...`);
 });
