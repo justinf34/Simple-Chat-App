@@ -29,6 +29,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 });
 
+const COOKIE_MAXAGE = 60 * 60 * 1000;
 app.post("/username", (req, res) => {
   console.log("Got a request", req.cookies);
   if (!req.cookies.user_name) {
@@ -36,14 +37,14 @@ app.post("/username", (req, res) => {
     // Generate new random user name
     res
       .cookie("user_name", Manager.newUserName(), {
-        maxAge: 60 * 60 * 1000,
+        maxAge: COOKIE_MAXAGE,
       })
       .send(JSON.stringify({ code: true }));
   } else {
     if (Manager.userNameTaken(req.cookies.user_name)) {
       res
         .cookie("user_name", Manager.newUserName(), {
-          maxAge: 60 * 60 * 1000,
+          maxAge: COOKIE_MAXAGE,
         })
         .send(JSON.stringify({ newName: true }));
     } else {

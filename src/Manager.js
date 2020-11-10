@@ -28,13 +28,19 @@ module.exports = function () {
     };
     Users.set(socketID, new_user);
     user_names.add(user_name);
+
+    console.log("addNewUser: ", Users);
   }
 
   function removeUser(socketID) {
     const user = Users.get(socketID);
-    user_names.delete(user.name);
-    Users.delete(socketID);
-    // Let others know that user left
+    if (user) {
+      user_names.delete(user.name);
+      Users.delete(socketID);
+      // Let others know that user left
+    }
+
+    console.log("removeUser: ", Users);
   }
 
   return {
