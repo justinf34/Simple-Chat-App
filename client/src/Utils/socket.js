@@ -21,8 +21,24 @@ export default function () {
     socket.on("disconnect", onDisconnect);
   }
 
+  function registerUsersList(onUsersList) {
+    socket.on("usersList", onUsersList);
+  }
+
+  function registerNewUser(onNewUser) {
+    socket.on("newUser", onNewUser);
+  }
+
+  function registerLeaveUser(onLeaveUser) {
+    console.log("registered");
+    socket.on("leaveUser", onLeaveUser);
+  }
+
   return {
     joinRoom,
     registerDisconnect,
+    registerUsersList,
+    registerNewUser,
+    registerLeaveUser,
   };
 }

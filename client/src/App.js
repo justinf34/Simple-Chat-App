@@ -7,15 +7,16 @@ import Chat from "./Components/Chat";
 
 import socket from "./Utils/socket";
 import { Button } from "react-bootstrap";
+import OnlineUsers from "./Components/OnlineUsers";
 
 export default class App extends Component {
   constructor(props) {
     super(props);
 
+    this.server_socket = socket();
     this.state = {
       connected: false,
       username: null,
-      server_socket: socket(),
     };
 
     this.onRetry = this.onRetry.bind(this);
@@ -54,7 +55,7 @@ export default class App extends Component {
   onRetry() {
     this.getUserName()
       .then((new_user_name) => {
-        this.state.server_socket.joinRoom(new_user_name);
+        this.server_socket.joinRoom(new_user_name);
 
         // Register to some event handlers
 
@@ -76,10 +77,10 @@ export default class App extends Component {
   componentDidMount() {
     this.getUserName()
       .then((new_user_name) => {
-        this.state.server_socket.joinRoom(new_user_name);
+        this.server_socket.joinRoom(new_user_name);
 
         // Register to some event handlers
-        this.state.server_socket.registerDisconnect(this.onDisconnect);
+        this.server_socket.registerDisconnect(this.onDisconnect);
 
         this.setState({
           username: new_user_name,
@@ -100,9 +101,10 @@ export default class App extends Component {
         ) : (
           <React.Fragment>
             <Chat />
-            <div className="online-user">
-              <h4>Online users:</h4>
-            </div>
+            <OnlineUsers
+              userName={this.state.username}
+              socket={this.server_socket}
+            />
           </React.Fragment>
         )}
       </div>

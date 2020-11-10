@@ -30,6 +30,7 @@ module.exports = function () {
     user_names.add(user_name);
 
     console.log("addNewUser: ", Users);
+    return new_user;
   }
 
   function removeUser(socketID) {
@@ -37,10 +38,17 @@ module.exports = function () {
     if (user) {
       user_names.delete(user.name);
       Users.delete(socketID);
+      console.log("removeUser: ", Users);
       // Let others know that user left
+      return user;
+    } else {
+      return undefined;
     }
+  }
 
-    console.log("removeUser: ", Users);
+  function getUsers() {
+    const users = Users.values();
+    return Array.from(users);
   }
 
   return {
@@ -48,5 +56,6 @@ module.exports = function () {
     userNameTaken,
     addNewUser,
     removeUser,
+    getUsers,
   };
 };
