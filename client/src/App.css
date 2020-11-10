@@ -1,0 +1,44 @@
+.App {
+  display: flex;
+  flex-flow: row;
+  height: 100vh;
+  width: 100vh;
+  max-width: 960px;
+  align-items: center;
+  justify-content: space-around;
+  margin: 0;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  margin: 0 auto;
+  flex: 2;
+}
+
+.chat-log {
+  overflow-y: auto;
+  width: 100%;
+}
+
+.chat-message {
+  display: flex;
+  align-items: center;
+  width: 90%;
+}
+
+.chat-input-area {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.online-user {
+  height: 100%;
+  flex: 1;
+}
