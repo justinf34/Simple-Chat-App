@@ -13,7 +13,7 @@ export default class Chat extends Component {
             // value={this.state.msg_input}
             // onChange={this.handleChange}
           />
-          <Button type="submit">Send</Button>
+          <Button onClick={() => console.log(document.cookie)}>Send</Button>
         </Form>
       </div>
     );

@@ -8,6 +8,8 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const path = require("path");
 
+const Manager = require("./src/Manager")();
+
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -30,11 +32,24 @@ app.get("/", (req, res) => {
 app.post("/username", (req, res) => {
   console.log("Got a request", req.cookies);
   if (!req.cookies.user_name) {
-    console.log("No user name cookie");
-    res.cookie("user_name", "testing", { maxAge: 90000, httpOnly: true });
+    console.log("/username: New user!");
+    // Generate new random user name
+    res
+      .cookie("user_name", Manager.newUserName(), {
+        maxAge: 60 * 60 * 1000,
+      })
+      .send(JSON.stringify({ code: true }));
   } else {
-    console.log("Has cookie", res.cookie.user_name);
-    res.send("Good");
+    if (Manager.userNameTaken(req.cookies.user_name)) {
+      res
+        .cookie("user_name", Manager.newUserName(), {
+          maxAge: 60 * 60 * 1000,
+        })
+        .send(JSON.stringify({ newName: true }));
+    } else {
+      //TODO: reset the cookie maxAge
+      res.send(JSON.stringify({ newName: false }));
+    }
   }
 });
 

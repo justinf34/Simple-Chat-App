@@ -18,12 +18,29 @@ export default class App extends Component {
   componentDidMount() {
     // fetch
     fetch("/username", {
-      method: "POST",
-      mode: "cors",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
       credentials: "include",
-    }).then((res) => {
-      console.log(res);
-    });
+      method: "POST",
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        // Get value of user name cookie
+        const cookieValue = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("user_name"))
+          .split("=")[1];
+        console.log(cookieValue);
+
+        this.setState({
+          username: cookieValue,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   render() {
