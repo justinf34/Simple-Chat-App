@@ -16,6 +16,7 @@ export default class App extends Component {
     this.state = {
       connected: false,
       username: null,
+      id: null,
       user_color: "007bff",
     };
 
@@ -52,6 +53,32 @@ export default class App extends Component {
     }
   }
 
+  async getUserID() {
+    try {
+      const res = await fetch("http://localhost:8888/id", {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        method: "POST",
+      });
+
+      const res_json = await res.json();
+
+      // Get value of user name cookie
+      const cookieValue = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("user_id"))
+        .split("=")[1];
+      console.log("getUserID: ", cookieValue);
+
+      return cookieValue;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   onRetry() {
     this.getUserName()
       .then((new_user_name) => {
@@ -75,15 +102,15 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    this.getUserName()
-      .then((new_user_name) => {
-        this.server_socket.joinRoom(new_user_name);
+    this.getUserID()
+      .then((id) => {
+        this.server_socket.joinRoomID(id);
 
         // Register to some event handlers
         this.server_socket.registerDisconnect(this.onDisconnect);
 
         this.setState({
-          username: new_user_name,
+          id: id,
           connected: true,
         });
       })
@@ -93,7 +120,7 @@ export default class App extends Component {
   render() {
     return (
       <div className="App">
-        {!this.state.username ? (
+        {!this.state.id ? (
           <div className="no-connection">
             <h3>Cannot connect to the server :^(</h3>
             <Button onClick={this.onRetry}>Retry</Button>
@@ -102,12 +129,14 @@ export default class App extends Component {
           <React.Fragment>
             <Chat
               userName={this.state.username}
+              id={this.state.id}
               color={this.state.user_color}
               socket={this.server_socket}
             />
 
             <OnlineUsers
               userName={this.state.username}
+              id={this.state.id}
               socket={this.server_socket}
             />
           </React.Fragment>

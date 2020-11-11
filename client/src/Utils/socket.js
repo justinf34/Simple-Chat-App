@@ -17,6 +17,10 @@ export default function () {
     socket.emit("join", user_name);
   }
 
+  function joinRoomID(id) {
+    socket.emit("joinID", id);
+  }
+
   function registerDisconnect(onDisconnect) {
     socket.on("disconnect", onDisconnect);
   }
@@ -43,6 +47,7 @@ export default function () {
 
   return {
     joinRoom,
+    joinRoomID,
     registerDisconnect,
     registerUsersList,
     registerNewUser,

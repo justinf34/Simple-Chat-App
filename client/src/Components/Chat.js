@@ -31,7 +31,7 @@ export default class Chat extends Component {
 
     //send the socket message here
     const message = {
-      author: this.props.userName,
+      id: this.props.id,
       type: 1,
       message: msg,
     };
@@ -56,13 +56,13 @@ export default class Chat extends Component {
           key={i}
           style={{
             color: "#" + msg.color,
-            fontWeight: msg.author === this.props.userName ? "bold" : "normal",
+            fontWeight: msg.id === this.props.id ? "bold" : "normal",
           }}
         >
           {msg.date +
             " " +
             (msg.type === 0
-              ? msg.author === this.props.userName
+              ? msg.id === this.props.id
                 ? "You "
                 : msg.author + " "
               : msg.author + ": ") +

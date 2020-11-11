@@ -69,6 +69,7 @@ module.exports = function () {
 
     // Add user to know users
     known_users.set(new_id, user_info);
+    console.log("Known users", known_users);
 
     return {
       id: new_id,
@@ -110,7 +111,7 @@ module.exports = function () {
 
     if (res.new) {
       // update messages of that user
-      messageArr2.forEach((elem) => {
+      messageArr.forEach((elem) => {
         if (elem.id === id) {
           elem.author = res.name;
         }
@@ -125,12 +126,48 @@ module.exports = function () {
       name: res.name,
       color: known_users.get(id).color,
     });
-    // Let others know
+
+    const date = new Date();
+    const message = {
+      id: id,
+      author: res.name,
+      type: 0,
+      color: known_users.get(id).color,
+      message: "joined the room",
+      date:
+        ("0" + date.getHours()).substr(-2) +
+        ":" +
+        ("0" + date.getMinutes()).substr(-2),
+    };
+
+    Messages.set(socket_id, [message]);
+    messageArr.push(message);
+
+    console.log("addNewUser: ", online_users);
+    return res.name;
   }
 
   function removeUser(socketID) {
     const user = online_users.get(socketID);
+
     if (user) {
+      const date = new Date();
+
+      const message = {
+        id: user.id,
+        author: user.name,
+        type: 0,
+        color: user.color,
+        message: "left the room",
+        date:
+          ("0" + date.getHours()).substr(-2) +
+          ":" +
+          ("0" + date.getMinutes()).substr(-2),
+      };
+
+      Messages.set(socketID, [message]);
+      messageArr.push(message);
+
       user_names.delete(user.name);
       online_users.delete(socketID);
 
@@ -156,6 +193,7 @@ module.exports = function () {
       ":" +
       ("0" + date.getMinutes()).substr(-2);
     message.color = online_users.get(socketID).color;
+    message.author = known_users.get(message.id).name;
     const msgs = Messages.get(socketID);
     try {
       msgs.push(message);

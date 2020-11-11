@@ -23,17 +23,15 @@ export default class OnlineUsers extends Component {
             className="user-li"
             style={{
               color: "#" + element.color,
-              fontWeight:
-                element.name === this.props.userName ? "bold" : "normal",
+              fontWeight: element.id === this.props.id ? "bold" : "normal",
             }}
           >
-            {element.name +
-              (element.name === this.props.userName ? "(You)" : "")}
+            {element.name + (element.id === this.props.id ? "(You)" : "")}
           </div>
         </ListGroupItem>
       );
 
-      if (element.name === this.props.userName) {
+      if (element.id === this.props.id) {
         list.unshift(li);
       } else {
         list.push(li);

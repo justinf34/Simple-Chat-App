@@ -84,13 +84,15 @@ io.on("connection", (socket) => {
   });
 
   socket.on("joinID", (id) => {
-    console.log(`socket: ${id} ${socket.id} joined...`);
+    console.log(`socket id: ${id} ${socket.id} joined...`);
 
-    Manager.setUserOnline(id); // Set user online
+    const name = Manager.setUserOnline(socket.id, id); // Set user online
+
+    socket.emit("name", name); //Give client its new name
 
     // Tell everyone that someone new joined
     const users_list = Manager.getUsers();
-    io.emit("userList", user);
+    io.emit("usersList", users_list);
     io.emit("newMessageList", Manager.getMessages());
   });
 
@@ -100,6 +102,7 @@ io.on("connection", (socket) => {
     //Let other users know that someone disconnected
     if (user) {
       socket.broadcast.emit("leaveUser", Manager.getUsers());
+      socket.broadcast.emit("newMessageList", Manager.getMessages());
     }
   });
 
