@@ -19,8 +19,6 @@ app.use(
 );
 
 app.use(cookieParser());
-// app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -34,7 +32,6 @@ app.post("/username", (req, res) => {
   console.log("Got a request", req.cookies);
   if (!req.cookies.user_name) {
     console.log("/username: New user!");
-    // Generate new random user name
     res
       .cookie("user_name", Manager.newUserName(), {
         maxAge: COOKIE_MAXAGE,
@@ -54,6 +51,25 @@ app.post("/username", (req, res) => {
   }
 });
 
+app.post("/id", (req, res) => {
+  console.log("id: Got a request", req.cookies);
+
+  if (!req.cookies.user_id) {
+    console.log("/id: New user!");
+
+    const usr = Manager.newUser();
+
+    res
+      .cookie("user_id", usr.id, {
+        maxAge: COOKIE_MAXAGE,
+      })
+      .send(JSON.stringify({ new: true }));
+  } else {
+    //TODO: reset the cookie maxAge
+    res.send(JSON.stringify({ new: false }));
+  }
+});
+
 io.on("connection", (socket) => {
   console.log("socket: a user connected");
 
@@ -62,14 +78,19 @@ io.on("connection", (socket) => {
     const new_user = Manager.addNewUser(socket.id, user_name);
 
     const users = Manager.getUsers();
+    socket.emit("usersList", users); //Send client the user list and message history
+    socket.broadcast.emit("newUser", users); //Let others know that someone joined the server
+    io.emit("newMessageList", Manager.getMessages()); //Tell everyone to get the newest message list
+  });
 
-    //Send client the user list and message history
-    socket.emit("usersList", users);
+  socket.on("joinID", (id) => {
+    console.log(`socket: ${id} ${socket.id} joined...`);
 
-    //Let others know that someone joined the server
-    socket.broadcast.emit("newUser", users);
+    Manager.setUserOnline(id); // Set user online
 
-    //Tell everyone to get the newest message list
+    // Tell everyone that someone new joined
+    const users_list = Manager.getUsers();
+    io.emit("userList", user);
     io.emit("newMessageList", Manager.getMessages());
   });
 
@@ -83,11 +104,8 @@ io.on("connection", (socket) => {
   });
 
   socket.on("message", (msg) => {
-    // console.log("A new message arrived ", msg);
     Manager.addMessage(socket.id, msg);
-
-    // Tell the everyone to get the newest messages
-    io.emit("newMessageList", Manager.getMessages());
+    io.emit("newMessageList", Manager.getMessages()); // Tell the everyone to get the newest messages
   });
 });
 
