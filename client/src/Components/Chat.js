@@ -56,10 +56,11 @@ export default class Chat extends Component {
         >
           {msg.date +
             " " +
-            (msg.type === 0 && msg.author === this.props.userName
-              ? "You"
-              : msg.author) +
-            ": " +
+            (msg.type === 0
+              ? msg.author === this.props.userName
+                ? "You "
+                : msg.author + " "
+              : msg.author + ": ") +
             msg.message}
         </div>
       );
