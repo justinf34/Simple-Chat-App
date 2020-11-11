@@ -13,10 +13,6 @@ export default function () {
     console.warn("received socket error: ", err);
   });
 
-  function joinRoom(user_name) {
-    socket.emit("join", user_name);
-  }
-
   function joinRoomID(id) {
     socket.emit("joinID", id);
   }
@@ -46,7 +42,6 @@ export default function () {
   }
 
   return {
-    joinRoom,
     joinRoomID,
     registerDisconnect,
     registerUsersList,

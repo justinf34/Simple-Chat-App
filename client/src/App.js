@@ -15,42 +15,11 @@ export default class App extends Component {
     this.server_socket = socket();
     this.state = {
       connected: false,
-      username: null,
       id: null,
-      user_color: "007bff",
     };
 
     this.onRetry = this.onRetry.bind(this);
     this.onDisconnect = this.onDisconnect.bind(this);
-  }
-
-  /**
-   * Get a valid username from the server
-   */
-  async getUserName() {
-    try {
-      const res = await fetch("http://localhost:8888/username", {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        method: "POST",
-      });
-
-      const res_json = await res.json();
-
-      // Get value of user name cookie
-      const cookieValue = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("user_name"))
-        .split("=")[1];
-      console.log("getUserName: ", cookieValue);
-
-      return cookieValue;
-    } catch (error) {
-      throw error;
-    }
   }
 
   async getUserID() {
@@ -80,14 +49,14 @@ export default class App extends Component {
   }
 
   onRetry() {
-    this.getUserName()
-      .then((new_user_name) => {
-        this.server_socket.joinRoom(new_user_name);
+    this.getUserID()
+      .then((id) => {
+        this.server_socket.joinRoomID(id);
 
         // Register to some event handlers
 
         this.setState({
-          username: new_user_name,
+          id: id,
           connected: true,
         });
       })
