@@ -1,8 +1,12 @@
 const crypto = require("crypto");
+const { get } = require("http");
+const flatten = require("array-flatten");
 
 module.exports = function () {
   const user_names = new Set();
   const Users = new Map();
+  const Messages = new Map();
+  const Messagev2 = [];
 
   function newUserName() {
     let user_name = "";
@@ -29,6 +33,21 @@ module.exports = function () {
     Users.set(socketID, new_user);
     user_names.add(user_name);
 
+    const date = new Date();
+    const message = {
+      author: user_name,
+      type: 0,
+      color: "007bff",
+      message: "joined the room",
+      date:
+        ("0" + date.getHours()).substr(-2) +
+        ":" +
+        ("0" + date.getMinutes()).substr(-2),
+    };
+
+    Messages.set(socketID, [message]);
+    Messagev2.push(message);
+
     console.log("addNewUser: ", Users);
     return new_user;
   }
@@ -38,8 +57,11 @@ module.exports = function () {
     if (user) {
       user_names.delete(user.name);
       Users.delete(socketID);
+
+      //TODO: set a default colour for this user's messages
+
       console.log("removeUser: ", Users);
-      // Let others know that user left
+
       return user;
     } else {
       return undefined;
@@ -50,6 +72,28 @@ module.exports = function () {
     const users = Users.values();
     return Array.from(users);
   }
+  function addMessage(socketID, message) {
+    const date = new Date();
+    message.date =
+      ("0" + date.getHours()).substr(-2) +
+      ":" +
+      ("0" + date.getMinutes()).substr(-2);
+    message.color = Users.get(socketID).color;
+    const msgs = Messages.get(socketID);
+    try {
+      msgs.push(message);
+      Messagev2.push(message);
+    } catch (erro) {
+      console.log("addMessage: That user does not exist");
+    }
+  }
+
+  function getMessages() {
+    const msgs = Array.from(Messages.values());
+
+    return Messagev2;
+    // return [].concat(...msgs);
+  }
 
   return {
     newUserName,
@@ -57,5 +101,7 @@ module.exports = function () {
     addNewUser,
     removeUser,
     getUsers,
+    addMessage,
+    getMessages,
   };
 };

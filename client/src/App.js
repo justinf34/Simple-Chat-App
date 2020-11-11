@@ -3,10 +3,9 @@ import React, { Component } from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import Chat from "./Components/Chat";
-
 import socket from "./Utils/socket";
 import { Button } from "react-bootstrap";
+import Chat from "./Components/Chat";
 import OnlineUsers from "./Components/OnlineUsers";
 
 export default class App extends Component {
@@ -17,6 +16,7 @@ export default class App extends Component {
     this.state = {
       connected: false,
       username: null,
+      user_color: "007bff",
     };
 
     this.onRetry = this.onRetry.bind(this);
@@ -100,7 +100,12 @@ export default class App extends Component {
           </div>
         ) : (
           <React.Fragment>
-            <Chat />
+            <Chat
+              userName={this.state.username}
+              color={this.state.user_color}
+              socket={this.server_socket}
+            />
+
             <OnlineUsers
               userName={this.state.username}
               socket={this.server_socket}

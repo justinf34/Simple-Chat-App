@@ -33,11 +33,21 @@ export default function () {
     socket.on("leaveUser", onLeaveUser);
   }
 
+  function sendMessage(msg) {
+    socket.emit("message", msg);
+  }
+
+  function registerNewMsgList(onNewMsgList) {
+    socket.on("newMessageList", onNewMsgList);
+  }
+
   return {
     joinRoom,
     registerDisconnect,
     registerUsersList,
     registerNewUser,
     registerLeaveUser,
+    registerNewMsgList,
+    sendMessage,
   };
 }

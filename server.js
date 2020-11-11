@@ -62,20 +62,32 @@ io.on("connection", (socket) => {
     const new_user = Manager.addNewUser(socket.id, user_name);
 
     const users = Manager.getUsers();
+
     //Send client the user list and message history
     socket.emit("usersList", users);
 
     //Let others know that someone joined the server
     socket.broadcast.emit("newUser", users);
+
+    //Tell everyone to get the newest message list
+    io.emit("newMessageList", Manager.getMessages());
   });
 
-  socket.on("disconnect", function () {
+  socket.on("disconnect", () => {
     console.log(`socket: ${socket.id} disconnected... `);
     const user = Manager.removeUser(socket.id);
     //Let other users know that someone disconnected
     if (user) {
       socket.broadcast.emit("leaveUser", Manager.getUsers());
     }
+  });
+
+  socket.on("message", (msg) => {
+    // console.log("A new message arrived ", msg);
+    Manager.addMessage(socket.id, msg);
+
+    // Tell the everyone to get the newest messages
+    io.emit("newMessageList", Manager.getMessages());
   });
 });
 
