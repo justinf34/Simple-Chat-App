@@ -28,28 +28,6 @@ app.get("/", (req, res) => {
 });
 
 const COOKIE_MAXAGE = 60 * 60 * 1000;
-app.post("/username", (req, res) => {
-  console.log("Got a request", req.cookies);
-  if (!req.cookies.user_name) {
-    console.log("/username: New user!");
-    res
-      .cookie("user_name", Manager.newUserName(), {
-        maxAge: COOKIE_MAXAGE,
-      })
-      .send(JSON.stringify({ code: true }));
-  } else {
-    if (Manager.userNameTaken(req.cookies.user_name)) {
-      res
-        .cookie("user_name", Manager.newUserName(), {
-          maxAge: COOKIE_MAXAGE,
-        })
-        .send(JSON.stringify({ newName: true }));
-    } else {
-      //TODO: reset the cookie maxAge
-      res.send(JSON.stringify({ newName: false }));
-    }
-  }
-});
 
 app.post("/id", (req, res) => {
   console.log("id: Got a request", req.cookies);
@@ -73,21 +51,10 @@ app.post("/id", (req, res) => {
 io.on("connection", (socket) => {
   console.log("socket: a user connected");
 
-  socket.on("join", (user_name) => {
-    console.log(`socket: ${user_name} ${socket.id} joined...`);
-    const new_user = Manager.addNewUser(socket.id, user_name);
-
-    const users = Manager.getUsers();
-    socket.emit("usersList", users); //Send client the user list and message history
-    socket.broadcast.emit("newUser", users); //Let others know that someone joined the server
-    io.emit("newMessageList", Manager.getMessages()); //Tell everyone to get the newest message list
-  });
-
   socket.on("joinID", (id) => {
     console.log(`socket id: ${id} ${socket.id} joined...`);
 
     const name = Manager.setUserOnline(socket.id, id); // Set user online
-
     socket.emit("name", name); //Give client its new name
 
     // Tell everyone that someone new joined
