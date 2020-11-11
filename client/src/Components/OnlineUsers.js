@@ -54,9 +54,8 @@ export default class OnlineUsers extends Component {
   onNewUser(user) {
     console.log("onNewUser", user);
     this.setState((prevState, prevProps) => {
-      return {
-        user_list: user,
-      };
+      prevState.push(user);
+      return {};
     });
   }
 
@@ -76,8 +75,8 @@ export default class OnlineUsers extends Component {
   componentDidMount() {
     const socket = this.props.socket;
     socket.registerUsersList(this.onUsersList);
-    socket.registerNewUser(this.onNewUser);
-    socket.registerLeaveUser(this.onNewUser);
+    socket.registerNewUser(this.onUsersList);
+    socket.registerLeaveUser(this.onUsersList);
   }
 
   //   componentDidUpdate() {

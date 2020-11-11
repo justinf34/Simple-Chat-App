@@ -30,7 +30,6 @@ export default function () {
   }
 
   function registerLeaveUser(onLeaveUser) {
-    console.log("registered");
     socket.on("leaveUser", onLeaveUser);
   }
 
