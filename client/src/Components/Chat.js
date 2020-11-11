@@ -24,11 +24,16 @@ export default class Chat extends Component {
 
     if (!this.state.msg) return;
 
+    let msg = this.state.msg
+      .replaceAll(":)", "😁")
+      .replaceAll(":(", "🙁")
+      .replaceAll(":o", "😲");
+
     //send the socket message here
     const message = {
       author: this.props.userName,
       type: 1,
-      message: this.state.msg,
+      message: msg,
     };
 
     this.props.socket.sendMessage(message);
