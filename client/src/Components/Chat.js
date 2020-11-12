@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Alert } from "react-bootstrap";
 
 export default class Chat extends Component {
   constructor(props) {
@@ -8,12 +8,30 @@ export default class Chat extends Component {
     this.state = {
       messages: [],
       msg: "",
+      show: false,
+      alert: "",
     };
 
+    this.handleClose = this.handleClose.bind(this);
+    this.handleOpen = this.handleOpen.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onNewMsgList = this.onNewMsgList.bind(this);
     this.onDeniedNameChange = this.onDeniedNameChange.bind(this);
+  }
+
+  handleClose() {
+    this.setState({
+      show: false,
+    });
+  }
+
+  handleOpen() {
+    this.setState({ show: true }, () => {
+      window.setTimeout(() => {
+        this.setState({ show: false });
+      }, 2000);
+    });
   }
 
   handleChange(e) {
@@ -45,9 +63,8 @@ export default class Chat extends Component {
       };
 
       this.props.socket.sendMessage(message);
+      this.setState({ msg: "" });
     }
-
-    this.setState({ msg: "" });
   }
 
   onNewMsgList(msg_list) {
@@ -56,20 +73,36 @@ export default class Chat extends Component {
     });
   }
 
+  setAlert(msg) {
+    this.setState(
+      {
+        show: true,
+        alert: msg,
+        msg: "",
+      },
+      () => {
+        window.setTimeout(() => {
+          this.setState({ show: false });
+        }, 2000);
+      }
+    );
+  }
+
   nameChange(msg) {
     const args = msg.split(" ");
 
     const RegExp = /\s/g;
     if (args.length != 2) {
       console.log("Wrong use of /name! Need the right amount of args!");
+      this.setAlert("Wrong use of /name! Need the right amount of args!");
     } else {
-      if (args[1].length < 4) {
-        console.log("Name must have at least 4 characters");
-      } else if (RegExp.test(args[1])) {
+      if (RegExp.test(args[1])) {
         console.log("Name must not contain spaces");
+        this.setAlert("Name must not contain spaces");
       } else {
         console.log("Changing name....");
         this.props.socket.changeName(args[1]);
+        this.setState({ msg: "" });
       }
     }
   }
@@ -79,16 +112,18 @@ export default class Chat extends Component {
 
     if (args.length != 2) {
       console.log("Wrong use of /color! Need the right amount of args!");
+      this.setAlert("Wrong use of /color! Need the right amount of args!");
     } else {
       const RegExp = /^#([0-9A-F]{6}){1,2}$/i;
 
       if (RegExp.test("#" + args[1])) {
-        // Tell server I changed colour
         console.log("Changing color....");
         this.props.socket.changeColor(args[1]);
+        this.setState({ msg: "" });
       } else {
-        // set alert
-        console.log("Invalid color");
+        console.log("Wrong use of /color! Invalid color!");
+        console.log("Wrong use of /color! Invalid color!");
+        this.setAlert("Wrong use of /color! Invalid color!");
       }
     }
   }
@@ -121,6 +156,7 @@ export default class Chat extends Component {
 
   onDeniedNameChange() {
     console.log("Username taken");
+    this.setAlert("Username taken!");
   }
 
   scrollToChatBottom() {
@@ -141,6 +177,22 @@ export default class Chat extends Component {
     console.log("Message", this.state.messages);
     return (
       <div className="chat-container">
+        <Alert
+          show={this.state.show}
+          variant="danger"
+          dismissible={true}
+          onClose={this.handleClose}
+          style={{
+            margin: "auto",
+            position: "absolute",
+            top: "0%",
+            left: "50%",
+            transform: "translate(-50%, 0%)",
+          }}
+        >
+          {this.state.alert}
+        </Alert>
+
         <div
           className="chat-log"
           ref={(panel) => {
