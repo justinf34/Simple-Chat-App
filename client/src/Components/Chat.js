@@ -24,19 +24,25 @@ export default class Chat extends Component {
 
     if (!this.state.msg) return;
 
-    let msg = this.state.msg
-      .replaceAll(":)", "😁")
-      .replaceAll(":(", "🙁")
-      .replaceAll(":o", "😲");
+    let msg = this.state.msg;
 
-    //send the socket message here
-    const message = {
-      id: this.props.id,
-      type: 1,
-      message: msg,
-    };
+    if (this.state.msg.startsWith("/color")) {
+      this.colorChange(msg);
+    } else {
+      msg = msg
+        .replaceAll(":)", "😁")
+        .replaceAll(":(", "🙁")
+        .replaceAll(":o", "😲");
+      console.log("Sending message: ", msg);
+      //send the socket message here
+      const message = {
+        id: this.props.id,
+        type: 1,
+        message: msg,
+      };
 
-    this.props.socket.sendMessage(message);
+      this.props.socket.sendMessage(message);
+    }
 
     this.setState({ msg: "" });
   }
@@ -45,6 +51,25 @@ export default class Chat extends Component {
     this.setState({
       messages: msg_list,
     });
+  }
+
+  colorChange(msg) {
+    const args = msg.split(" ");
+
+    if (args.length != 2) {
+      console.log("Wrong use of /color! Need the right amount of args!");
+    } else {
+      const RegExp = /^#([0-9A-F]{6}){1,2}$/i;
+
+      if (RegExp.test("#" + args[1])) {
+        // Tell server I changed colour
+        console.log("Changing color....");
+        this.props.socket.changeColor(args[1]);
+      } else {
+        // set alert
+        console.log("Invalid color");
+      }
+    }
   }
 
   renderMsgs() {
@@ -98,6 +123,7 @@ export default class Chat extends Component {
         >
           {this.renderMsgs()}
         </div>
+
         <Form className="chat-input-area" onSubmit={this.handleSubmit}>
           <Form.Control
             type="text"

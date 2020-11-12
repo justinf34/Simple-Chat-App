@@ -41,6 +41,10 @@ export default function () {
     socket.on("newMessageList", onNewMsgList);
   }
 
+  function changeColor(color) {
+    socket.emit("color-change", color);
+  }
+
   return {
     joinRoomID,
     registerDisconnect,
@@ -49,5 +53,6 @@ export default function () {
     registerLeaveUser,
     registerNewMsgList,
     sendMessage,
+    changeColor,
   };
 }

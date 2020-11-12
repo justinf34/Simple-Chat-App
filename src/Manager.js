@@ -153,6 +153,38 @@ module.exports = function () {
     return messageArr;
   }
 
+  function changeColour(socket_id, color) {
+    const user = online_users.get(socket_id);
+
+    known_users.get(user.id).color = color;
+    user.color = color;
+
+    const message = {
+      id: user.id,
+      type: 0,
+      message: `changed colour to ${color}`,
+    };
+
+    addMessage(socket_id, message);
+    updateMessageColours(user.id, color);
+  }
+
+  function updateMessageColours(id, color) {
+    messageArr.forEach((msg, i) => {
+      if (msg.id == id) {
+        msg.color = color;
+      }
+    });
+  }
+
+  function updateMessageAuthorName(id, name) {
+    messageArr.forEach((msg, i) => {
+      if (msg.id == id) {
+        msg.author = name;
+      }
+    });
+  }
+
   return {
     newUser,
     removeUser,
@@ -160,5 +192,6 @@ module.exports = function () {
     addMessage,
     getMessages,
     setUserOnline,
+    changeColour,
   };
 };

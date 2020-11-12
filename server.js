@@ -77,6 +77,14 @@ io.on("connection", (socket) => {
     Manager.addMessage(socket.id, msg);
     io.emit("newMessageList", Manager.getMessages()); // Tell the everyone to get the newest messages
   });
+
+  socket.on("color-change", (color) => {
+    console.log(`socket: ${socket.id} requested a colour change to ${color}`);
+    Manager.changeColour(socket.id, color);
+
+    io.emit("usersList", Manager.getUsers());
+    io.emit("newMessageList", Manager.getMessages());
+  });
 });
 
 let port = process.env.PORT || 8888;
