@@ -1,9 +1,10 @@
 import io from "socket.io-client";
 
-const SOCKET_IO_URL = "http://localhost:8888";
+const SOCKET_IO_URL =
+  process.env.NODE_ENV !== "production" ? "http://localhost:8888" : "";
 
 export default function () {
-  const socket = io("http://localhost:8888");
+  const socket = io(SOCKET_IO_URL);
 
   socket.on("connect", (data) => {
     console.log("Connected to the server socket...");

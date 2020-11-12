@@ -24,7 +24,7 @@ export default class App extends Component {
 
   async getUserID() {
     try {
-      const res = await fetch("http://localhost:8888/id", {
+      const res = await fetch("/id", {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",

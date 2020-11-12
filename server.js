@@ -10,13 +10,14 @@ const path = require("path");
 
 const Manager = require("./src/Manager")();
 
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: "http://localhost:3000",
+//     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//     credentials: true,
+//   })
+// );
+app.use(cors());
 
 app.use(cookieParser());
 app.use(express.json());
