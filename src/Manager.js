@@ -9,6 +9,11 @@ module.exports = function () {
 
   const known_users = new Map();
 
+  function nameTaken(name) {
+    const online_usr_infos = Array.from(online_users.values());
+    return online_usr_infos.filter((usr) => usr.name == name).length > 0;
+  }
+
   function newUserName2(name) {
     let user_name = name;
     let changed = false;
@@ -70,7 +75,8 @@ module.exports = function () {
         }
       });
 
-      known_users.set(id, res.name);
+      const user = known_users.get(id);
+      user.name = res.name;
     }
 
     // Add the user to the online list
@@ -177,6 +183,28 @@ module.exports = function () {
     });
   }
 
+  function changeName(socket_id, name) {
+    if (!nameTaken(name)) {
+      const user = online_users.get(socket_id);
+
+      user.name = name;
+      known_users.get(user.id).name = name;
+
+      const message = {
+        id: user.id,
+        type: 0,
+        message: `used to be ${user.name}`,
+      };
+
+      addMessage(socket_id, message);
+      updateMessageAuthorName(user.id, name);
+
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   function updateMessageAuthorName(id, name) {
     messageArr.forEach((msg, i) => {
       if (msg.id == id) {
@@ -193,5 +221,6 @@ module.exports = function () {
     getMessages,
     setUserOnline,
     changeColour,
+    changeName,
   };
 };

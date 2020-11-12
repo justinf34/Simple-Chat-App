@@ -85,6 +85,18 @@ io.on("connection", (socket) => {
     io.emit("usersList", Manager.getUsers());
     io.emit("newMessageList", Manager.getMessages());
   });
+
+  socket.on("name-change", (name) => {
+    console.log(`socket: ${socket.id} requested a name change to ${name}`);
+    const res = Manager.changeName(socket.id, name);
+
+    if (res) {
+      io.emit("usersList", Manager.getUsers());
+      io.emit("newMessageList", Manager.getMessages());
+    } else {
+      socket.emit("name-change-denied");
+    }
+  });
 });
 
 let port = process.env.PORT || 8888;

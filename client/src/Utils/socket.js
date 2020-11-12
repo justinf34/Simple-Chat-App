@@ -45,6 +45,14 @@ export default function () {
     socket.emit("color-change", color);
   }
 
+  function changeName(name) {
+    socket.emit("name-change", name);
+  }
+
+  function registerDeniedNameChange(onDenied) {
+    socket.on("name-change-denied", onDenied);
+  }
+
   return {
     joinRoomID,
     registerDisconnect,
@@ -54,5 +62,7 @@ export default function () {
     registerNewMsgList,
     sendMessage,
     changeColor,
+    changeName,
+    registerDeniedNameChange,
   };
 }

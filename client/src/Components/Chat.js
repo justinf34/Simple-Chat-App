@@ -13,6 +13,7 @@ export default class Chat extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onNewMsgList = this.onNewMsgList.bind(this);
+    this.onDeniedNameChange = this.onDeniedNameChange.bind(this);
   }
 
   handleChange(e) {
@@ -26,8 +27,10 @@ export default class Chat extends Component {
 
     let msg = this.state.msg;
 
-    if (this.state.msg.startsWith("/color")) {
+    if (msg.startsWith("/color")) {
       this.colorChange(msg);
+    } else if (msg.startsWith("/name")) {
+      this.nameChange(msg);
     } else {
       msg = msg
         .replaceAll(":)", "😁")
@@ -51,6 +54,24 @@ export default class Chat extends Component {
     this.setState({
       messages: msg_list,
     });
+  }
+
+  nameChange(msg) {
+    const args = msg.split(" ");
+
+    const RegExp = /\s/g;
+    if (args.length != 2) {
+      console.log("Wrong use of /name! Need the right amount of args!");
+    } else {
+      if (args[1].length < 4) {
+        console.log("Name must have at least 4 characters");
+      } else if (RegExp.test(args[1])) {
+        console.log("Name must not contain spaces");
+      } else {
+        console.log("Changing name....");
+        this.props.socket.changeName(args[1]);
+      }
+    }
   }
 
   colorChange(msg) {
@@ -98,6 +119,10 @@ export default class Chat extends Component {
     return msgs_list;
   }
 
+  onDeniedNameChange() {
+    console.log("Username taken");
+  }
+
   scrollToChatBottom() {
     this.panel.scrollTo(0, this.panel.scrollHeight);
   }
@@ -105,6 +130,7 @@ export default class Chat extends Component {
   componentDidMount() {
     const socket = this.props.socket;
     socket.registerNewMsgList(this.onNewMsgList);
+    socket.registerDeniedNameChange(this.onDeniedNameChange);
   }
 
   componentDidUpdate() {
