@@ -64,8 +64,22 @@ module.exports = function () {
 
   function setUserOnline(socket_id, id) {
     // get user name
-    const name = known_users.get(id).name;
-    const res = newUserName2(name);
+    const user = known_users.get(id);
+
+    let res = "";
+
+    if (!user) {
+      res = newUserName2(id);
+
+      const user_info = {
+        name: res.name,
+        color: "007bff",
+      };
+
+      known_users.set(id, user_info);
+    } else {
+      res = newUserName2(user.name);
+    }
 
     if (res.new) {
       // update messages of that user
