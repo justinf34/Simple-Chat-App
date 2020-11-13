@@ -34,6 +34,7 @@
   width: 100%;
   padding: 2px;
   height: 90%;
+  max-height: 90%;
   flex: 2;
 }
 
