@@ -92,11 +92,21 @@ export default class Chat extends Component {
     const args = msg.split(" ");
 
     const RegExp = /\s/g;
-    if (args.length != 2) {
+    if (args.length < 2) {
       console.log("Wrong use of /name! Need the right amount of args!");
       this.setAlert("Wrong use of /name! Need the right amount of args!");
+    } else if (args.length > 2) {
+      console.log("Wrong use of /name! Names cannot have spaces!");
+      this.setAlert("Wrong use of /name! Names cannot have spaces!");
     } else {
-      if (RegExp.test(args[1])) {
+      if (args[1].length < 4) {
+        console.log(
+          "Wrong use of /name! Name must at least be 4 characters long!"
+        );
+        this.setAlert(
+          "Wrong use of /name! Name must at least be 4 characters long!"
+        );
+      } else if (RegExp.test(args[1])) {
         console.log("Name must not contain spaces");
         this.setAlert("Name must not contain spaces");
       } else {
