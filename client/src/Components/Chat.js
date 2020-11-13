@@ -192,14 +192,15 @@ export default class Chat extends Component {
         >
           {this.state.alert}
         </Alert>
-
-        <div
-          className="chat-log"
-          ref={(panel) => {
-            this.panel = panel;
-          }}
-        >
-          {this.renderMsgs()}
+        <div className="chat-log-container">
+          <div
+            className="chat-log"
+            ref={(panel) => {
+              this.panel = panel;
+            }}
+          >
+            {this.renderMsgs()}
+          </div>
         </div>
 
         <Form className="chat-input-area" onSubmit={this.handleSubmit}>
