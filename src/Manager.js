@@ -86,20 +86,13 @@ module.exports = function () {
       color: known_users.get(id).color,
     });
 
-    const date = new Date();
     const message = {
       id: id,
-      author: res.name,
       type: 0,
-      color: known_users.get(id).color,
       message: "joined the room",
-      date:
-        ("0" + date.getHours()).substr(-2) +
-        ":" +
-        ("0" + date.getMinutes()).substr(-2),
     };
 
-    messageArr.push(message);
+    addMessage(socket_id, message);
 
     console.log("addNewUser: ", online_users);
     return res.name;
@@ -109,21 +102,13 @@ module.exports = function () {
     const user = online_users.get(socketID);
 
     if (user) {
-      const date = new Date();
-
       const message = {
         id: user.id,
-        author: user.name,
         type: 0,
-        color: user.color,
         message: "left the room",
-        date:
-          ("0" + date.getHours()).substr(-2) +
-          ":" +
-          ("0" + date.getMinutes()).substr(-2),
       };
 
-      messageArr.push(message);
+      addMessage(socketID, message);
 
       online_users.delete(socketID);
 
@@ -148,10 +133,10 @@ module.exports = function () {
       ("0" + date.getMinutes()).substr(-2);
     message.color = online_users.get(socketID).color;
     message.author = known_users.get(message.id).name;
-    try {
-      messageArr.push(message);
-    } catch (erro) {
-      console.log("addMessage: That user does not exist");
+    messageArr.push(message);
+
+    if (messageArr.length > 200) {
+      messageArr.shift();
     }
   }
 
